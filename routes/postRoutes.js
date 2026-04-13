@@ -4,7 +4,7 @@ import { createPost, getScheduledPosts, deletePost } from '../controllers/postCo
 const router = express.Router();
 
 router.post("/create", createPost);
-router.get("/", getPosts);
+router.get("/", getScheduledPosts);
 router.delete("/:id", deletePost);
 
 export default router;
