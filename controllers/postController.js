@@ -38,3 +38,19 @@ export async function getScheduledPosts(req, res) {
     res.status(500).json({ error: "Failed to load scheduled posts" });
   }
 }
+export async function deletePost(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deleted = await SchedulePost.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.json({ message: "Post deleted successfully" });
+  } catch (err) {
+    console.log("Delete post error:", err);
+    res.status(500).json({ error: "Failed to delete post" });
+  }
+}
