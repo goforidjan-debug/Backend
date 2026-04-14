@@ -15,6 +15,7 @@ async function processScheduledPosts() {
   try {
     const now = new Date();
 
+    // ✅ Correct model name: SchedulePost
     const duePosts = await SchedulePost.find({
       status: "pending",
       scheduledFor: { $lte: now },
