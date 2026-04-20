@@ -1,43 +1,26 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
+// middleware/shopifyWebhookValidator.js
+import crypto from "crypto";
 
-import dashboardRoutes from "./routes/dashboardRoutes.js";
-import mediaRoutes from "./routes/mediaRoutes.js";
-import postRoutes from "./routes/postRoutes.js";
-import webhookRoutes from "./routes/webhookRoutes.js";
+export const verifyShopifyWebhook = (req, res, next) => {
+  try {
+    const hmacHeader = req.headers["x-shopify-hmac-sha256"];
 
-import "./scheduler/postScheduler.js";
+    // Raw body is attached in server.js
+    const rawBody = req.rawBody || "";
 
-dotenv.config();
+    const digest = crypto
+      .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
+      .update(rawBody, "utf8")
+      .digest("base64");
 
-const app = express();
-// Shopify raw body parser (required for webhook validation)
-app.use(
-  "/webhooks/shopify",
-  express.raw({ type: "*/*" }),
-  (req, res, next) => {
-    req.rawBody = req.body ? req.body.toString("utf8") : "";
+    if (digest !== hmacHeader) {
+      console.log("❌ Invalid Shopify HMAC");
+      return res.status(401).send("Unauthorized");
+    }
+
     next();
+  } catch (error) {
+    console.error("HMAC validation error:", error);
+    res.status(400).send("Invalid webhook");
   }
-);
-
-
-app.use(cors());
-app.use(express.json());
-
-// ROUTES
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/media", mediaRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/webhooks", webhookRoutes);
-
-// MONGO CONNECTION
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB error:", err));
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+};
