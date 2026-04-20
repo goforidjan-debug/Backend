@@ -6,12 +6,23 @@ import mongoose from "mongoose";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import mediaRoutes from "./routes/mediaRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
+import webhookRoutes from "./routes/webhookRoutes.js";
 
 import "./scheduler/postScheduler.js";
 
 dotenv.config();
 
 const app = express();
+// Shopify raw body parser (required for webhook validation)
+app.use(
+  "/webhooks/shopify",
+  express.raw({ type: "application/json" }),
+  (req, res, next) => {
+    req.rawBody = req.body.toString("utf8");
+    next();
+  }
+);
+
 app.use(cors());
 app.use(express.json());
 
@@ -19,6 +30,7 @@ app.use(express.json());
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/media", mediaRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/webhooks", webhookRoutes);
 
 // MONGO CONNECTION
 mongoose
