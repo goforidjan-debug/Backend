@@ -4,11 +4,13 @@ import crypto from "crypto";
 export const verifyShopifyWebhook = (req, res, next) => {
   try {
     const hmacHeader = req.headers["x-shopify-hmac-sha256"];
-    const rawBody = req.rawBody; // We will attach this in server.js
+
+    // Raw body is attached in server.js
+    const rawBody = req.rawBody || "";
 
     const digest = crypto
       .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
-      .update(rawBody || "", "utf8")
+      .update(rawBody, "utf8")
       .digest("base64");
 
     if (digest !== hmacHeader) {
