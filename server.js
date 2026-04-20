@@ -13,7 +13,14 @@ import "./scheduler/postScheduler.js";
 dotenv.config();
 
 const app = express();
-// Shopify raw body parser (required for webhook validation)
+app.use(cors());
+
+/**
+ * SHOPIFY RAW BODY PARSER
+ * Must come BEFORE express.json()
+ * Accepts any content type (*/*)
+ * Ensures req.rawBody is always available
+ */
 app.use(
   "/webhooks/shopify",
   express.raw({ type: "*/*" }),
@@ -23,13 +30,16 @@ app.use(
   }
 );
 
-app.use(cors());
+// Normal JSON parser for the rest of the app
 app.use(express.json());
 
 // ROUTES
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/media", mediaRoutes);
 app.use("/api/posts", postRoutes);
+
+// Webhooks route
+app.use("/webhooks", webhookRoutes);
 
 // MONGO CONNECTION
 mongoose
