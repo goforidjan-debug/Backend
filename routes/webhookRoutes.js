@@ -1,25 +1,9 @@
-// controllers/webhookController.js
+import express from "express";
+import { handleShopifyWebhook } from "../controllers/webhookController.js";
+import { verifyShopifyWebhook } from "../middleware/shopifyWebhookValidator.js";
 
-export const handleShopifyWebhook = async (req, res) => {
-  try {
-    const event = req.headers["x-shopify-topic"];
-    const shop = req.headers["x-shopify-shop-domain"];
-    const payload = req.body;
+const router = express.Router();
 
-    console.log("📬 Webhook received:");
-    console.log("Event:", event);
-    console.log("Shop:", shop);
-    console.log("Payload:", payload);
+router.post("/shopify", verifyShopifyWebhook, handleShopifyWebhook);
 
-    // TODO: Insert your AGM Auto-Poster logic here
-    // Example:
-    // if (event === "products/create") {
-    //   await autoPoster.handleNewProduct(payload);
-    // }
-
-    res.status(200).send("OK");
-  } catch (error) {
-    console.error("Webhook error:", error);
-    res.status(500).send("Webhook processing failed");
-  }
-};
+export default router;
