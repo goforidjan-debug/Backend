@@ -16,9 +16,9 @@ const app = express();
 // Shopify raw body parser (required for webhook validation)
 app.use(
   "/webhooks/shopify",
-  express.raw({ type: "application/json" }),
+  express.raw({ type: "*/*" }),
   (req, res, next) => {
-    req.rawBody = req.body.toString("utf8");
+    req.rawBody = req.body ? req.body.toString("utf8") : "";
     next();
   }
 );
