@@ -1,5 +1,3 @@
-// controllers/webhookController.js
-
 export const handleShopifyWebhook = async (req, res) => {
   try {
     const event = req.headers["x-shopify-topic"];
@@ -11,7 +9,7 @@ export const handleShopifyWebhook = async (req, res) => {
     console.log("Shop:", shop);
     console.log("Payload:", payload);
 
-    // TODO: Insert your AGM Auto-Poster logic here
+    // TODO: Add your AGM Auto-Poster logic here
     // Example:
     // if (event === "products/create") {
     //   await autoPoster.handleNewProduct(payload);

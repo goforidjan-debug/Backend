@@ -1,4 +1,3 @@
-// middleware/shopifyWebhookValidator.js
 import crypto from "crypto";
 
 export const verifyShopifyWebhook = (req, res, next) => {
